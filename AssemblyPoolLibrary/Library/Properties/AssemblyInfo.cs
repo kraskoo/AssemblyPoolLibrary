@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("AssemblyPoolLibrary")]
-[assembly: AssemblyDescription("Contains three classes with dependency between them, ProjectNameContainer is a public non-static class with")]
+[assembly: AssemblyDescription("Contains three classes with dependency between them, ProjectNameContainer is a public non-static")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("Library")]
