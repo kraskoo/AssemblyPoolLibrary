@@ -1,17 +1,16 @@
 ﻿namespace Tester
 {
-    using Library;
     using System;
+    using Library;
 
     public class EntryPoint
     {
         public static void Main()
         {
-            var instanceOfThisClassWithDependency = AssemblyPool.GetInstance<SomeClassWithDependency>();
+            var instanceOfThisClassWithDependency = AssemblyPool.GetInstance<SomeClassWithDependency>(true);
             Console.WriteLine(instanceOfThisClassWithDependency);
             var instanceOfThisInterface = AssemblyPool.GetInstance<ISomeInterface>();
             Console.WriteLine(instanceOfThisInterface);
-            Console.WriteLine();
         }
     }
 

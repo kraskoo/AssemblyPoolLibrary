@@ -7,15 +7,35 @@
     using System.Reflection;
     using Exceptions;
 
+    /// <summary>
+    /// Dependency resolver class works with cached objects
+    /// </summary>
     public static class AssemblyPool
     {
         private static readonly ConcurrentDictionary<Type, object> ObjectsByType = new ConcurrentDictionary<Type, object>();
 
-        public static T GetInstance<T>()
+        /// <summary>
+        /// This method has purpose to serve as dependency resolver.
+        /// Accept a class or interface by given generic type, returns instance of an object.
+        /// If the given type is a class, it must has either constructor or property getter method, which has its return type. If the given type is interface, it must has inheritence's objects in the same assembly.
+        /// </summary>
+        /// <typeparam name="T">Return type</typeparam>
+        /// <param name="clearCache">This parameter give an opportunity for delete cache before returning of instance</param>
+        /// <returns></returns>
+        public static T GetInstance<T>(bool clearCache = false)
         {
             var typeofT = typeof(T);
-            T instance = (T)GetInstance(typeofT);
+            var instance = (T)GetInstance(typeofT);
+            if (clearCache) ClearCache();
             return instance;
+        }
+
+        /// <summary>
+        /// Clears cached objects by type. The next requesting type has will be cached again.
+        /// </summary>
+        public static void ClearCache()
+        {
+            ObjectsByType.Clear();
         }
 
         private static object GetInstance(Type typeofT)
@@ -94,6 +114,7 @@
                     var typeOfMostCommonTypeSimilarToInterface =
                         instances.FirstOrDefault(t => t.Name == mostCommonWordsInTypeName);
                     instance = GetInstance(typeOfMostCommonTypeSimilarToInterface);
+                    ObjectsByType[typeofT] = instance;
                 }
                 else if (typeofT.IsEnum)
                 {
@@ -132,14 +153,47 @@
 
             return lambdaExpression.Compile().DynamicInvoke(parameterExpressions.Select(p => ObjectsByType[p.Type]).ToArray());
         }
-
+        
         private static void TypeCheckInsurence(ParameterInfo parameter)
         {
-            switch (parameter.ParameterType.FullName)
+            var parameterTypeFullName = parameter.ParameterType.Name;
+            switch (parameterTypeFullName)
             {
+                case nameof(Int32):
+                    ThrownsByType(typeof(int));
+                    break;
+                case nameof(Int64):
+                    ThrownsByType(typeof(long));
+                    break;
+                case nameof(Decimal):
+                    ThrownsByType(typeof(decimal));
+                    break;
+                case nameof(Single):
+                    ThrownsByType(typeof(float));
+                    break;
+                case nameof(Double):
+                    ThrownsByType(typeof(double));
+                    break;
+                case nameof(Char):
+                    ThrownsByType(typeof(char));
+                    break;
+                case nameof(String):
+                    ThrownsByType(typeof(string));
+                    break;
+                case nameof(DateTime):
+                    ThrownsByType(typeof(DateTime));
+                    break;
+                case nameof(TimeSpan):
+                    ThrownsByType(typeof(TimeSpan));
+                    break;
                 default:
                     break;
             }
+        }
+
+        private static void ThrownsByType(Type type)
+        {
+            throw new InstantiationException($"{type} is primitive type and it's not resolveable object.");
         }
     }
 }

@@ -66,7 +66,7 @@
         {
             var assemblyByInterface = @interface.Assembly;
             var assemblyTypes = assemblyByInterface.DefinedTypes;
-            var instances = assemblyTypes.Where(t => @interface.IsAssignableFrom(t));
+            var instances = assemblyTypes.Where(@interface.IsAssignableFrom);
             return instances.Where(t => t.IsClass);
         }
     }
